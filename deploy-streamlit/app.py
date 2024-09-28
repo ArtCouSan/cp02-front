@@ -8,7 +8,7 @@ from sentence_transformers import SentenceTransformer
 model = SentenceTransformer('bert-base-nli-mean-tokens')  # Replace with your model
 
 # Load the DataFrame data
-df = pd.read_csv('./imdb-movies-recommendation/deploy-streamlit/Xtest.csv')
+df = pd.read_csv('./deploy-streamlit/Xtest.csv')
 
 # Title of the application
 st.title("Movie Recommendation System")
