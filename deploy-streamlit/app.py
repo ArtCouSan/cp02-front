@@ -7,6 +7,26 @@ from PIL import Image
 import requests
 from io import BytesIO
 
+# Função para gerar estrelas com base na nota
+def display_stars(rating, max_stars=10):
+    # Verificar se a nota está como string e contém vírgula
+    if isinstance(rating, str):
+        rating = rating.replace(',', '.')  # Substituir vírgula por ponto
+    
+    try:
+        # Converter a nota para float
+        rating = float(rating)
+    except ValueError:
+        st.error("Erro ao converter a nota para número.")
+        return ""
+
+    full_star = "&#9733;"  # Unicode para estrela cheia
+    empty_star = "&#9734;"  # Unicode para estrela vazia
+    stars = full_star * int(rating) + empty_star * (max_stars - int(rating))
+    
+    # Retornar as estrelas e a nota numérica juntas
+    return f"{stars} ({rating:.1f}/10)"  # Formata a nota com uma casa decimal
+
 # Configurações de estilo
 st.set_page_config(layout="wide")  # Layout de página mais largo
 
@@ -86,6 +106,12 @@ st.markdown(
         font-size: 0.9em;
         font-style: italic;
     }
+    /* Estilo para estrelas */
+    .movie-rating {
+        color: #e50914;
+        font-size: 1.2em;
+        text-align: center;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -95,7 +121,7 @@ st.markdown(
 model = SentenceTransformer('bert-base-nli-mean-tokens')
 
 # Carregar os dados do DataFrame
-df = pd.read_csv('../deploy-streamlit/Xtest.csv', delimiter=';', encoding='utf-8')
+df = pd.read_csv('Xtest.csv', delimiter=';', encoding='utf-8')
 
 # Título da aplicação
 st.title("IA Flix")
@@ -156,7 +182,11 @@ if st.button("Recommend Movies"):
 
                 # Exibir a imagem com estilo personalizado
                 st.image(img, use_column_width=True, caption="", output_format="auto", clamp=False)
+                
+                # Exibir título e nota do filme em estrelas e nota numérica
                 st.markdown(f"<div class='movie-title'>{row['title_en']}</div>", unsafe_allow_html=True)
+                rating_stars = display_stars(row['rating'])  # Gerar estrelas com base na nota do filme
+                st.markdown(f"<div class='movie-rating'>{rating_stars}</div>", unsafe_allow_html=True)
                 st.markdown(f"<div class='movie-caption'>{row['synopsis'][:100]}...</div>", unsafe_allow_html=True)
 
     else:
