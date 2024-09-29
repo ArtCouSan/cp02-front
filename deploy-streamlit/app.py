@@ -7,17 +7,86 @@ from PIL import Image
 import requests
 from io import BytesIO
 
+# Configurações de estilo
+st.set_page_config(layout="wide")  # Layout de página mais largo
+
+# Aplicar CSS personalizado para tema Netflix
+st.markdown(
+    """
+    <style>
+    /* Background geral */
+    .block-container {
+        padding: 1rem 1rem 10rem;
+    }
+    .stApp {
+        background-color: #141414;  /* Fundo preto */
+    }
+    /* Estilo do título */
+    .css-10trblm {
+        color: #e50914;  /* Vermelho Netflix */
+        font-size: 3em;
+        text-align: center;
+        font-weight: bold;
+    }
+    /* Subtítulo */
+    .css-16huue1 {
+        color: #ffffff;
+        text-align: center;
+        font-size: 1.2em;
+    }
+    /* Caixa de entrada de texto */
+    .css-1msw4hw {
+        background-color: #333;
+        color: white;
+        border-color: #e50914;  /* Borda vermelha */
+    }
+    /* Botão */
+    .css-1cpxqw2 {
+        background-color: #e50914;  /* Fundo vermelho */
+        color: white;
+        font-size: 1em;
+        font-weight: bold;
+        border: none;
+    }
+    .css-1cpxqw2:hover {
+        background-color: #b20710;  /* Vermelho mais escuro ao passar o mouse */
+    }
+    /* Estilo das imagens */
+    .stImage {
+        border: 2px solid #e50914;  /* Borda vermelha */
+        border-radius: 5px;
+        box-shadow: 0px 4px 8px rgba(0,0,0,0.5);  /* Sombra */
+    }
+    /* Texto centralizado */
+    .movie-title {
+        color: #e50914;
+        font-size: 1em;
+        text-align: center;
+        font-weight: bold;
+    }
+    /* Legenda */
+    .movie-caption {
+        color: #ffffff;
+        text-align: center;
+        font-size: 0.9em;
+        font-style: italic;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Carregar o modelo
 model = SentenceTransformer('bert-base-nli-mean-tokens')
 
 # Carregar os dados do DataFrame
-df = pd.read_csv('./deploy-streamlit/Xtest.csv')
-
-# Certifique-se de que o DataFrame possui uma coluna chamada 'image_url' com os links das imagens
-# df['image_url'] = 'http://link_to_image.jpg'  # Caso não tenha, adicione a coluna manualmente
+df = pd.read_csv('Xtest.csv', delimiter=';', encoding='utf-8')
 
 # Título da aplicação
-st.title("Movie Recommendation System")
+st.title("IA Flix")
+
+# Subtítulo
+st.markdown("<div class='css-16huue1'>Discover movies that match your interests!</div>", unsafe_allow_html=True)
 
 # Entrada do usuário para a sinopse
 new_synopsis = st.text_area("Enter the new movie synopsis:", "american car designer carroll shelby driver")
@@ -57,19 +126,23 @@ if st.button("Recommend Movies"):
         # Exibir resultados em um layout de grid
         st.subheader("Recommended Movies")
 
+        # Dividir a tela em colunas para um layout em grid
         cols = st.columns(5)  # Cria 5 colunas para os filmes recomendados
 
         for idx, (_, row) in enumerate(recommended_movies.iterrows()):
             with cols[idx % 5]:  # Distribui os filmes nas colunas
-                # Obter a imagem do filme usando o link contido na coluna 'image_url'
                 try:
-                    response = requests.get(row['image_url'])
+                    # Carregar a imagem do filme usando o link contido na coluna 'imgs'
+                    response = requests.get(row['imgs'])
                     img = Image.open(BytesIO(response.content))
-                except:
+                except Exception as e:
+                    st.error(f"Erro ao carregar a imagem: {e}")
                     img = Image.open('default_image.jpg')  # Imagem padrão caso falhe
 
-                st.image(img, use_column_width=True)
-                st.markdown(f"**{row['title_en']}**")
-                st.caption(row['synopsis'])
+                # Exibir a imagem com estilo personalizado
+                st.image(img, use_column_width=True, caption="", output_format="auto", clamp=False)
+                st.markdown(f"<div class='movie-title'>{row['title_en']}</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='movie-caption'>{row['synopsis'][:100]}...</div>", unsafe_allow_html=True)
+
     else:
         st.warning("There are no movies in the same cluster.")
