@@ -121,7 +121,7 @@ st.markdown(
 model = SentenceTransformer('bert-base-nli-mean-tokens')
 
 # Carregar os dados do DataFrame
-df = pd.read_csv('Xtest.csv', delimiter=';', encoding='utf-8')
+df = pd.read_csv('../deploy-streamlit/Xtest.csv', delimiter=';', encoding='utf-8')
 
 # Título da aplicação
 st.title("IA Flix")
