@@ -10,6 +10,16 @@ from io import BytesIO
 # Configurações de estilo
 st.set_page_config(layout="wide")  # Layout de página mais largo
 
+# Incluir fontes personalizadas no cabeçalho
+st.markdown(
+    """
+    <head>
+        <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    </head>
+    """, 
+    unsafe_allow_html=True
+)
+
 # Aplicar CSS personalizado para tema Netflix
 st.markdown(
     """
@@ -24,6 +34,7 @@ st.markdown(
     /* Estilo do título */
     .css-10trblm {
         color: #e50914;  /* Vermelho Netflix */
+        font-family: 'Bebas Neue', sans-serif; /* Fonte Bebas Neue */
         font-size: 3em;
         text-align: center;
         font-weight: bold;
@@ -31,6 +42,7 @@ st.markdown(
     /* Subtítulo */
     .css-16huue1 {
         color: #ffffff;
+        font-family: 'Roboto', sans-serif; /* Fonte Roboto */
         text-align: center;
         font-size: 1.2em;
     }
@@ -44,6 +56,7 @@ st.markdown(
     .css-1cpxqw2 {
         background-color: #e50914;  /* Fundo vermelho */
         color: white;
+        font-family: 'Roboto', sans-serif; /* Fonte Roboto */
         font-size: 1em;
         font-weight: bold;
         border: none;
@@ -60,13 +73,15 @@ st.markdown(
     /* Texto centralizado */
     .movie-title {
         color: #e50914;
-        font-size: 1em;
+        font-family: 'Bebas Neue', sans-serif; /* Fonte Bebas Neue */
+        font-size: 1.5em;
         text-align: center;
         font-weight: bold;
     }
     /* Legenda */
     .movie-caption {
         color: #ffffff;
+        font-family: 'Roboto', sans-serif; /* Fonte Roboto */
         text-align: center;
         font-size: 0.9em;
         font-style: italic;
@@ -80,7 +95,7 @@ st.markdown(
 model = SentenceTransformer('bert-base-nli-mean-tokens')
 
 # Carregar os dados do DataFrame
-df = pd.read_csv('Xtest.csv', delimiter=';', encoding='utf-8')
+df = pd.read_csv('../deploy-streamlit/Xtest.csv', delimiter=';', encoding='utf-8')
 
 # Título da aplicação
 st.title("IA Flix")
